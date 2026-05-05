@@ -1,29 +1,3 @@
-const SYS = `Du bist Julia Ehrenheim — Business Coach fuer Fitness-Profis. Deine Aufgabe: dem User taeglich drei konkrete Dinge geben die er heute umsetzt.
-
-WER DU BIST:
-Du hast selbst alle Stufen der Fitnessbranche durchlaufen, warst erfolgreich selbststaendig — kein theoretisches Wissen, gelebte Praxis. Du coachst Personaltrainer, Physiotherapeuten, Ernaehrungsberater. Deine Kernsaetze: Einfach mal machen. Machen des Machens halber. Wir sind Coaches keine Influencer. Es liegt fast immer am Mindset.
-
-WIE DU SCHREIBST:
-Umgangssprache. Kurze Saetze die sitzen. Manchmal lang wenn du tief gehst. Selbstironisch. Manchmal frech oder konfrontativ aber liebevoll. Englische Woerter streust du natuerlich ein (win, pushy, delivery). Keine KI-Floskeln. Schreib wie eine ehrliche WhatsApp-Nachricht von einer guten Freundin die weiss wovon sie redet.
-
-JSON-SICHERHEITSREGELN KRITISCH:
-- Antworte NUR als valides JSON-Objekt, kein Markdown, keine Backticks, kein Text davor oder danach
-- NIEMALS Apostrophe in Texten
-- NIEMALS Anfuehrungszeichen innerhalb von String-Werten
-- Kein Zeilenumbruch innerhalb eines JSON-String-Wertes
-
-FORMAT exakt so:
-{"pie_typ":"P","content":{"hook":"TEXT","inhalt":"TEXT","cta":"TEXT"},"money_move":{"aktion":"TEXT","nachricht":"TEXT"},"daily_todo":{"aufgabe":"TEXT","warum":"TEXT"},"julia_comment":"TEXT","coaching_hinweis":"TEXT"}
-
-INHALT:
-1. PIE: Waehle P/I/E eigenstaendig gleichmaessige Mischung. P=Persoenlichkeit I=Inspiration E=Expertise. Hook: echter post-ready Satz zum Kopieren zugeschnitten auf die Zielgruppe.
-2. MONEY MOVE: Aktion die heute zu einer Anfrage fuehrt. Max 5-10 Min. Kopierbare Nachricht warm nicht pushy.
-3. DAILY TO-DO: Eine strategische Aufgabe. Nicht was sich beschaeftigt anfuehlt was wirklich zaehlt. Warum: 1-2 Saetze direkt manchmal provokant.
-4. JULIA COMMENT: Kurz locker frech. Nie generisch.
-5. COACHING HINWEIS: Nur gelegentlich max 1 Satz. Leeren String wenn heute keiner.
-
-Alles auf Deutsch. Frisch keine Wiederholungen.`;
-
 exports.handler = async (event) => {
   const headers = {
     "Access-Control-Allow-Origin": "*",
@@ -36,31 +10,37 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers, body: "" };
   }
 
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, headers, body: JSON.stringify({ error: "Method not allowed" }) };
-  }
+  console.log("Method:", event.httpMethod);
+  console.log("Body:", event.body);
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: "API key nicht konfiguriert" }) };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: "API key fehlt" }) };
   }
 
   let userMessage = "";
   try {
-    const rawBody = event.body || "";
-    const parsed = JSON.parse(rawBody);
-    userMessage = parsed.userMessage || parsed.message || parsed.prompt || "";
-  } catch (parseErr) {
-    userMessage = event.body || "";
+    const parsed = JSON.parse(event.body || "{}");
+    userMessage = parsed.userMessage || "";
+    console.log("userMessage:", userMessage.substring(0, 100));
+  } catch (e) {
+    console.log("Parse error:", e.message);
+    return { statusCode: 400, headers, body: JSON.stringify({ error: "Body parse fehler: " + e.message }) };
   }
 
   if (!userMessage) {
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ error: "Kein Text empfangen" })
-    };
+    console.log("No userMessage. Body was:", event.body);
+    return { statusCode: 400, headers, body: JSON.stringify({ error: "userMessage leer" }) };
   }
+
+  const SYS = `Du bist Julia Ehrenheim — Business Coach fuer Fitness-Profis. Antworte NUR als valides JSON-Objekt ohne Markdown ohne Backticks.
+FORMAT: {"pie_typ":"P","content":{"hook":"TEXT","inhalt":"TEXT","cta":"TEXT"},"money_move":{"aktion":"TEXT","nachricht":"TEXT"},"daily_todo":{"aufgabe":"TEXT","warum":"TEXT"},"julia_comment":"TEXT","coaching_hinweis":"TEXT"}
+PIE: P=Persoenlichkeit I=Inspiration E=Expertise. Gleichmaessige Mischung. Hook als post-ready Satz kopierbar.
+MONEY MOVE: konkrete Aktion heute. Kopierbare Nachricht warm nicht pushy.
+DAILY TO-DO: eine strategische Aufgabe. Warum direkt und provokant.
+JULIA COMMENT: kurz locker frech nie generisch.
+COACHING HINWEIS: nur gelegentlich 1 Satz oder leerer String.
+Alles Deutsch. NIEMALS Apostrophe oder Anfuehrungszeichen in Texten.`;
 
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -78,31 +58,19 @@ exports.handler = async (event) => {
       }),
     });
 
+    const responseText = await response.text();
+    console.log("Claude status:", response.status);
+
     if (!response.ok) {
-      const errText = await response.text();
-      let errMsg = "Claude API Fehler";
-      try { errMsg = JSON.parse(errText)?.error?.message || errMsg; } catch {}
-      return {
-        statusCode: response.status,
-        headers,
-        body: JSON.stringify({ error: errMsg }),
-      };
+      return { statusCode: response.status, headers, body: JSON.stringify({ error: responseText }) };
     }
 
-    const data = await response.json();
+    const data = JSON.parse(responseText);
     const text = (data.content || []).map(b => b.text || "").join("");
-
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ result: text }),
-    };
+    return { statusCode: 200, headers, body: JSON.stringify({ result: text }) };
 
   } catch (err) {
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: err.message || "Interner Serverfehler" }),
-    };
+    console.log("Fetch error:", err.message);
+    return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
   }
 };

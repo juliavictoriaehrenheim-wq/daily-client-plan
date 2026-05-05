@@ -10,9 +10,6 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers, body: "" };
   }
 
-  console.log("Method:", event.httpMethod);
-  console.log("Body:", event.body);
-
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return { statusCode: 500, headers, body: JSON.stringify({ error: "API key fehlt" }) };
@@ -20,17 +17,26 @@ exports.handler = async (event) => {
 
   let userMessage = "";
   try {
-    const parsed = JSON.parse(event.body || "{}");
+    let bodyStr = event.body || "";
+    if (event.isBase64Encoded) {
+      bodyStr = Buffer.from(bodyStr, "base64").toString("utf8");
+    }
+    const parsed = JSON.parse(bodyStr);
     userMessage = parsed.userMessage || "";
-    console.log("userMessage:", userMessage.substring(0, 100));
   } catch (e) {
-    console.log("Parse error:", e.message);
-    return { statusCode: 400, headers, body: JSON.stringify({ error: "Body parse fehler: " + e.message }) };
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: "Parse fehler: " + e.message + " | body: " + String(event.body).substring(0, 100) })
+    };
   }
 
   if (!userMessage) {
-    console.log("No userMessage. Body was:", event.body);
-    return { statusCode: 400, headers, body: JSON.stringify({ error: "userMessage leer" }) };
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: "userMessage fehlt. Body: " + String(event.body).substring(0, 200) })
+    };
   }
 
   const SYS = `Du bist Julia Ehrenheim — Business Coach fuer Fitness-Profis. Antworte NUR als valides JSON-Objekt ohne Markdown ohne Backticks.
@@ -59,8 +65,6 @@ Alles Deutsch. NIEMALS Apostrophe oder Anfuehrungszeichen in Texten.`;
     });
 
     const responseText = await response.text();
-    console.log("Claude status:", response.status);
-
     if (!response.ok) {
       return { statusCode: response.status, headers, body: JSON.stringify({ error: responseText }) };
     }
@@ -70,7 +74,6 @@ Alles Deutsch. NIEMALS Apostrophe oder Anfuehrungszeichen in Texten.`;
     return { statusCode: 200, headers, body: JSON.stringify({ result: text }) };
 
   } catch (err) {
-    console.log("Fetch error:", err.message);
     return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
   }
 };

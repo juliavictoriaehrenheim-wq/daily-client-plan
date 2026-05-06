@@ -209,10 +209,10 @@ export default function App() {
             <span style={S.ctag}>Kurze Einordnung</span>
             <h2 style={S.ch2}>3 schnelle Fragen – dann geht's los</h2>
             <p style={S.desc}>Damit dein Plan wirklich zu dir passt.</p>
-            <div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap"}}>
+            <div style={{display:"flex",gap:8,marginBottom:20,alignItems:"center"}}>
               <div style={S.dateChip}>{getToday()}</div>
-              <div style={{display:"inline-block",background:["P","P_ANGEBOT"].includes(PIE_TYPES[pieIndex])?"#f4f0ff":["I","I_WIN","I_FEEDBACK"].includes(PIE_TYPES[pieIndex])?"#fff8f0":"#f0f7ff",border:"1px solid "+( ["P","P_ANGEBOT"].includes(PIE_TYPES[pieIndex])?"#c9b8ff":["I","I_WIN","I_FEEDBACK"].includes(PIE_TYPES[pieIndex])?"#ffc89a":"#9acfff"),borderRadius:8,padding:"8px 14px",fontSize:12,fontWeight:700,color:["P","P_ANGEBOT"].includes(PIE_TYPES[pieIndex])?"#7b5ea7":["I","I_WIN","I_FEEDBACK"].includes(PIE_TYPES[pieIndex])?"#d4730a":"#2a7db5"}}>
-                Content heute: {PIE_NAMES[PIE_TYPES[pieIndex]]}
+              <div style={{fontSize:10,fontWeight:800,color:["P","P_ANGEBOT"].includes(PIE_TYPES[pieIndex])?"#7b5ea7":["I","I_WIN","I_FEEDBACK"].includes(PIE_TYPES[pieIndex])?"#d4730a":"#2a7db5",letterSpacing:1,opacity:0.6}}>
+                {PIE_TYPES[pieIndex].charAt(0)}
               </div>
             </div>
 

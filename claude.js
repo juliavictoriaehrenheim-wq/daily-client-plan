@@ -39,11 +39,28 @@ NIEMALS Apostrophe in Texten. NIEMALS Anfuehrungszeichen innerhalb von Strings. 
 FORMAT:
 {"pie_typ":"P","content":{"hook":"TEXT","inhalt":"TEXT","cta":"TEXT"},"money_move":{"aktion":"TEXT","nachricht":"TEXT"},"daily_todo":{"aufgabe":"TEXT","warum":"TEXT"},"julia_comment":"TEXT","coaching_hinweis":"TEXT"}
  
-CONTENT MOVE — alles ist fertig zum Kopieren und Posten. In Ich-Form aus Sicht des PTs geschrieben.
-- pie_typ: waehle P, I oder E — gleichmaessige Mischung ueber Tage. P=Persoenlichkeit, I=Inspiration, E=Expertise
-- hook: Fertiger Hook in Ich-Form — direkt postbar. Konkret, spezifisch, auf die Zielgruppe des Users zugeschnitten. Kein Platzhalter. Beispiele: Ich trainiere seit 8 Jahren Frauen ab 40 — und dieser eine Fehler kostet sie alle ihre Ergebnisse. / Nach 200 Behandlungen weiss ich: Das ist der Grund warum dein Ruecken nicht besser wird.
-- inhalt: Fertiger Post-Text in Ich-Form — 3-5 Saetze die direkt gepostet werden koennen. Konkret, authentisch, mit echtem Mehrwert fuer die Zielgruppe.
-- cta: Fertiger Call-to-Action Satz zum direkten Posten. Zum Beispiel: Schreib mir JETZT in die DMs wenn du das auch kennst. / Speicher dir das fuer deinen naechsten Trainingstag. / Schick mir eine Nachricht wenn du Fragen hast.
+CONTENT MOVE — alles fertig zum Kopieren und Posten. In Ich-Form aus Sicht des PTs.
+ 
+Der User gibt dir den PIE-Typ vor. Halte dich exakt daran.
+ 
+P = Persoenlichkeit: Zeigt wer der PT als Person ist. Baue regelmaessig ein aus diesen Unterkategorien (wechsle ab):
+  - Eigene Story: Warum er diesen Job macht, was ihn antreibt, persoenliche Momente
+  - Eigenes Angebot: Was er anbietet, fuer wen, warum es funktioniert — ohne harten Pitch, authentisch erklaert
+  Beispiel-Hooks: Ich wollte nie einfach der Trainer sein der Wiederholungen zaehlt — das hier ist warum. / Was in meinem Angebot steckt das die meisten ueberrascht wenn sie anfangen.
+ 
+I = Inspiration: Zeigt was fuer Klienten moeglich ist. Baue regelmaessig ein aus diesen Unterkategorien (wechsle ab):
+  - Client Wins: Echte Ergebnisse und Transformationen von Klienten (anonym, aber konkret)
+  - Kundenfeedback: Was Klienten sagen, was sich veraendert hat, kleine und grosse Wins
+  Beispiel-Hooks: Sie hat mir letzte Woche geschrieben — nach 3 Monaten. Ich musste kurz schlucken. / Er wollte einfach nur weniger Rueckenschmerzen. Was passiert ist hat ihn selbst ueberrascht.
+ 
+E = Expertise: Positioniert als Experte. Tipps, Fehler, Wissen aus der Praxis.
+  Beispiel-Hooks: Warum du nicht abnimmst obwohl du trainierst — die ehrliche Antwort. / 3 Fehler die fast alle beim Rueckentraining machen.
+ 
+WICHTIG: Wechsle innerhalb von P und I zwischen den Unterkategorien — nicht immer nur Story, nicht immer nur Client Wins.
+ 
+- hook: Fertiger Hook in Ich-Form — direkt postbar. Konkret, kein Platzhalter.
+- inhalt: Fertiger Post-Text in Ich-Form — 3-5 Saetze direkt postbar. Authentisch, echter Mehrwert.
+- cta: Fertiger CTA-Satz zum direkten Posten.
  
 MONEY MOVE:
 - aktion: Eine konkrete Aktion die HEUTE zu einer Anfrage fuehren kann. Max 5-10 Min.

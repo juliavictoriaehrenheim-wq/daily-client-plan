@@ -15,10 +15,10 @@ function safeParseJSON(raw) {
 }
 
 const PIE_COLOR = { P: "#7b5ea7", I: "#d4730a", E: "#2a7db5" };
-const PIE_LABEL = { P: "Persoenlichkeit", I: "Inspiration", E: "Expertise" };
-const BERUF_OPTIONS = ["Personaltrainer", "Physiotherapeut", "Fitness Coach", "Ernaehrungsberater", "Online Coach", "Anderes"];
+const PIE_LABEL = { P: "Persönlichkeit", I: "Inspiration", E: "Expertise" };
+const BERUF_OPTIONS = ["Personaltrainer", "Physiotherapeut", "Fitness Coach", "Ernährungsberater", "Online Coach", "Anderes"];
 const LEVEL_OPTIONS = ["Ich stehe am Anfang", "Ich habe schon erste Kunden", "Ich bin fortgeschritten"];
-const FOKUS_OPTIONS = ["Sichtbarkeit", "Gespraeche", "Kunden / Verkauf"];
+const FOKUS_OPTIONS = ["Sichtbarkeit", "Gespräche", "Kunden / Verkauf"];
 
 export default function App() {
   const [screen, setScreen] = useState("form");
@@ -47,7 +47,7 @@ export default function App() {
     let mi = 0;
     ticker.current = setInterval(() => { mi = (mi + 1) % msgs.length; setLoadMsg(msgs[mi]); }, 2200);
     const berufLabel = answers.beruf === "Anderes" ? (answers.berufCustom || "Coach") : answers.beruf;
-    const userMsg = "Tagesplan fuer heute " + getToday() + ". Beruf: " + berufLabel + ". Level: " + answers.level + ". Fokus: " + answers.fokus + ". PIE-Rotation: waehle eigenstaendig was heute am besten passt. Frischen konkreten Plan bitte.";
+    const userMsg = "Tagesplan für heute " + getToday() + ". Beruf: " + berufLabel + ". Level: " + answers.level + ". Fokus: " + answers.fokus + ". PIE-Rotation: wähle eigenständig was heute am besten passt. Frischen konkreten Plan bitte.";
     try {
       const res = await fetch("/.netlify/functions/claude", {
         method: "POST",
@@ -115,13 +115,6 @@ export default function App() {
     footer: { textAlign:"center", padding:"20px 24px", color:"rgba(255,255,255,0.5)", fontSize:11, letterSpacing:1 },
   };
 
-  const Hl = ({ id, text }) => (
-    <div style={S.hl}>
-      <button style={S.cpbtn(copied[id])} onClick={() => doCopy(id, text||"")}>{copied[id]?"Kopiert ✓":"Kopieren"}</button>
-      {text}
-    </div>
-  );
-
   return (
     <div style={S.wrap}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap');@keyframes spin{to{transform:rotate(360deg)}}`}</style>
@@ -131,16 +124,16 @@ export default function App() {
       </div>
       <div style={S.hero}>
         <div style={S.tag}>Daily Client Plan</div>
-        <h1 style={S.h1}>Dein taeglicher Business Plan</h1>
-        <p style={S.h1sub}>fuer mehr Kunden</p>
-        <p style={S.sub}>Nutze das jeden Morgen 1x - das ist dein Tagesplan.</p>
-        <p style={S.hint}>Kein Overthinking. Direkt umsetzen.</p>
+        <h1 style={S.h1}>Dein täglicher Business Plan</h1>
+        <p style={S.h1sub}>für mehr Kunden</p>
+        <p style={S.sub}>Nutze das jeden Morgen 1x – das ist dein Tagesplan.</p>
+        <p style={S.hint}>Kein Overthinking. Direkt umsetzen. Jeden Tag ein kleiner Schritt.</p>
       </div>
       <div style={S.wrap2}>
         {screen==="form" && (
           <div style={S.card}>
             <span style={S.ctag}>Kurze Einordnung</span>
-            <h2 style={S.ch2}>3 schnelle Fragen</h2>
+            <h2 style={S.ch2}>3 schnelle Fragen – dann geht's los</h2>
             <p style={S.desc}>Damit dein Plan wirklich zu dir passt.</p>
             <div style={S.dateChip}>{getToday()}</div>
             <div style={S.qWrap}>
@@ -187,7 +180,7 @@ export default function App() {
               <h3 style={S.rh3}><span style={S.rnum}>02</span> Money Move</h3>
               <div style={S.rbody}>
                 <p style={{marginBottom:10}}><strong>{result.money_move?.aktion}</strong></p>
-                <div style={{fontSize:11,fontWeight:800,letterSpacing:1.5,textTransform:"uppercase",color:"#cc3333",marginBottom:4}}>Nachricht - direkt kopieren</div>
+                <div style={{fontSize:11,fontWeight:800,letterSpacing:1.5,textTransform:"uppercase",color:"#cc3333",marginBottom:4}}>Nachricht – direkt kopieren</div>
                 <div style={S.hl}><button style={S.cpbtn(copied["money"])} onClick={()=>doCopy("money",result.money_move?.nachricht||"")}>{copied["money"]?"Kopiert ✓":"Kopieren"}</button>{result.money_move?.nachricht}</div>
               </div>
             </div>
@@ -201,9 +194,9 @@ export default function App() {
             {result.coaching_hinweis && <div style={S.coachBox}>{result.coaching_hinweis}</div>}
             <div style={S.challengeBox}>
               <div style={{fontWeight:800,fontSize:15,marginBottom:6,color:"#fff"}}>Mini Challenge</div>
-              <div style={{fontSize:13,color:"rgba(255,255,255,0.75)",marginBottom:12}}>Schaffst du alle 3 in unter 15 Minuten?<br/><span style={{fontSize:12,opacity:0.6}}>Geschafft = +1 Streak - Ziel: 5 Tage</span></div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,0.75)",marginBottom:12}}>Schaffst du alle 3 in unter 15 Minuten?<br/><span style={{fontSize:12,opacity:0.6}}>Geschafft = +1 Streak · Ziel: 5 Tage</span></div>
               <div style={{display:"flex",gap:6}}>{[1,2,3,4,5].map(i=><div key={i} style={S.streakDot(i<=streak)}>{i<=streak?"✓":i}</div>)}</div>
-              <button style={S.streakBtn(streakDone)} onClick={!streakDone?()=>{setStreak(s=>s+1);setStreakDone(true);}:undefined}>{streakDone?"Streak: "+streak+" Tag"+(streak>1?"e":"")+" ✓":"Geschafft - Streak +1"}</button>
+              <button style={S.streakBtn(streakDone)} onClick={!streakDone?()=>{setStreak(s=>s+1);setStreakDone(true);}:undefined}>{streakDone?`Streak: ${streak} Tag${streak>1?"e":""} ✓`:"Geschafft – Streak +1"}</button>
             </div>
             {result.julia_comment && (
               <div style={S.juliaBox}>
@@ -212,13 +205,13 @@ export default function App() {
               </div>
             )}
             <div style={{display:"flex",gap:12,marginTop:8}}>
-              <button style={{...S.btnBack,flex:1}} onClick={()=>{setResult(null);setError("");setScreen("form");}}>Einordnung aendern</button>
-              <button style={{...S.btnMain,marginTop:0,flex:2}} onClick={()=>{setResult(null);setError("");setScreen("form");}}>Plan fuer morgen</button>
+              <button style={{...S.btnBack,flex:1}} onClick={()=>{setResult(null);setError("");setScreen("form");}}>Einordnung ändern</button>
+              <button style={{...S.btnMain,marginTop:0,flex:2}} onClick={()=>{setResult(null);setError("");setScreen("form");}}>Plan für morgen</button>
             </div>
           </div>
         )}
       </div>
-      <div style={S.footer}>fitnesszumbusiness.de - Julia Ehrenheim</div>
+      <div style={S.footer}>fitnesszumbusiness.de · Julia Ehrenheim</div>
     </div>
   );
 }

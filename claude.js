@@ -27,7 +27,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: "Parse fehler: " + e.message + " | body: " + String(event.body).substring(0, 100) })
+      body: JSON.stringify({ error: "Parse fehler: " + e.message })
     };
   }
 
@@ -35,18 +35,11 @@ exports.handler = async (event) => {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: "userMessage fehlt. Body: " + String(event.body).substring(0, 200) })
+      body: JSON.stringify({ error: "userMessage fehlt" })
     };
   }
 
-  const SYS = `Du bist Julia Ehrenheim — Business Coach fuer Fitness-Profis. Antworte NUR als valides JSON-Objekt ohne Markdown ohne Backticks.
-FORMAT: {"pie_typ":"P","content":{"hook":"TEXT","inhalt":"TEXT","cta":"TEXT"},"money_move":{"aktion":"TEXT","nachricht":"TEXT"},"daily_todo":{"aufgabe":"TEXT","warum":"TEXT"},"julia_comment":"TEXT","coaching_hinweis":"TEXT"}
-PIE: P=Persoenlichkeit I=Inspiration E=Expertise. Gleichmaessige Mischung. Hook als post-ready Satz kopierbar.
-MONEY MOVE: konkrete Aktion heute. Kopierbare Nachricht warm nicht pushy.
-DAILY TO-DO: eine strategische Aufgabe. Warum direkt und provokant.
-JULIA COMMENT: kurz locker frech nie generisch.
-COACHING HINWEIS: nur gelegentlich 1 Satz oder leerer String.
-Alles Deutsch. NIEMALS Apostrophe oder Anfuehrungszeichen in Texten.`;
+  const SYS = "Du bist Julia Ehrenheim — Business Coach fuer Fitness-Profis. Antworte NUR als valides JSON-Objekt ohne Markdown ohne Backticks. FORMAT: {\"pie_typ\":\"P\",\"content\":{\"hook\":\"TEXT\",\"inhalt\":\"TEXT\",\"cta\":\"TEXT\"},\"money_move\":{\"aktion\":\"TEXT\",\"nachricht\":\"TEXT\"},\"daily_todo\":{\"aufgabe\":\"TEXT\",\"warum\":\"TEXT\"},\"julia_comment\":\"TEXT\",\"coaching_hinweis\":\"TEXT\"} PIE: P=Persoenlichkeit I=Inspiration E=Expertise. Gleichmaessige Mischung. Hook als post-ready Satz kopierbar. MONEY MOVE: konkrete Aktion heute. Kopierbare Nachricht warm nicht pushy. DAILY TO-DO: eine strategische Aufgabe. Warum direkt und provokant. JULIA COMMENT: kurz locker frech nie generisch. COACHING HINWEIS: nur gelegentlich 1 Satz oder leerer String. Alles Deutsch. NIEMALS Apostrophe oder Anfuehrungszeichen in Texten.";
 
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {

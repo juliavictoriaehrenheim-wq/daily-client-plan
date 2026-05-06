@@ -59,11 +59,21 @@ function safeParseJSON(raw) {
   try { return JSON.parse(s); } catch { return null; }
 }
 
-const PIE_COLOR = { P: "#7b5ea7", I: "#d4730a", E: "#2a7db5" };
+const PIE_COLOR = { P: "#7b5ea7", P_ANGEBOT: "#7b5ea7", I: "#d4730a", I_WIN: "#d4730a", I_FEEDBACK: "#c45f00", E: "#2a7db5" };
 const PIE_LABEL = { P: "Persönlichkeit", I: "Inspiration", E: "Expertise" };
 const BERUF_OPTIONS = ["Personaltrainer", "Physiotherapeut", "Fitness Coach", "Ernährungsberater", "Online Coach", "Anderes"];
 const LEVEL_OPTIONS = ["Ich stehe am Anfang", "Ich habe schon erste Kunden", "Ich bin fortgeschritten"];
 const FOKUS_OPTIONS = ["Sichtbarkeit", "Gespräche", "Kunden / Verkauf"];
+const PIE_TYPES = ["P", "I", "E", "P", "E", "P_ANGEBOT", "I_WIN", "E", "P", "I_FEEDBACK"];
+// P = Story, P_ANGEBOT = Angebot vorstellen, I_WIN = Client Win, I_FEEDBACK = Kundenfeedback, E = Expertise
+const PIE_NAMES = {
+  P: "Persönlichkeit – deine Story",
+  P_ANGEBOT: "Persönlichkeit – dein Angebot",
+  I: "Inspiration – Transformation",
+  I_WIN: "Inspiration – Client Win",
+  I_FEEDBACK: "Inspiration – Kundenfeedback",
+  E: "Expertise – Tipp / Wissen"
+};
 
 export default function App() {
   const [screen, setScreen] = useState("form");
@@ -75,6 +85,10 @@ export default function App() {
   const [loadMsg, setLoadMsg] = useState("Erstelle deinen Tagesplan...");
   const [streak, setStreak] = useState(0);
   const [streakDone, setStreakDone] = useState(false);
+  const [pieIndex, setPieIndex] = useState(() => {
+    // Start based on day of year for natural daily variation
+    return Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000) % 3;
+  });
   const ticker = useRef(null);
 
   const setA = (k, v) => setAnswers(a => ({ ...a, [k]: v }));
@@ -94,7 +108,7 @@ export default function App() {
     ticker.current = setInterval(() => { mi = (mi + 1) % msgs.length; setLoadMsg(msgs[mi]); }, 2200);
 
     const berufLabel = answers.beruf === "Anderes" ? (answers.berufCustom || "Coach") : answers.beruf;
-    const userMsg = "Tagesplan für heute " + getToday() + ". Beruf: " + berufLabel + ". Level: " + answers.level + ". Fokus: " + answers.fokus + ". PIE-Rotation: wähle eigenständig was heute am besten passt. Frischen konkreten Plan bitte.";
+    const userMsg = "Tagesplan für heute " + getToday() + ". Beruf: " + berufLabel + ". Level: " + answers.level + ". Fokus: " + answers.fokus + ". Heutiger Content-Typ: " + PIE_NAMES[PIE_TYPES[pieIndex]] + " — nutze GENAU diese Kategorie. Kein anderer Typ. Frischen konkreten Plan.";
 
     try {
       const res = await fetch("/.netlify/functions/claude", {
@@ -195,7 +209,12 @@ export default function App() {
             <span style={S.ctag}>Kurze Einordnung</span>
             <h2 style={S.ch2}>3 schnelle Fragen – dann geht's los</h2>
             <p style={S.desc}>Damit dein Plan wirklich zu dir passt.</p>
-            <div style={S.dateChip}>{getToday()}</div>
+            <div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap"}}>
+              <div style={S.dateChip}>{getToday()}</div>
+              <div style={{display:"inline-block",background:["P","P_ANGEBOT"].includes(PIE_TYPES[pieIndex])?"#f4f0ff":["I","I_WIN","I_FEEDBACK"].includes(PIE_TYPES[pieIndex])?"#fff8f0":"#f0f7ff",border:"1px solid "+( ["P","P_ANGEBOT"].includes(PIE_TYPES[pieIndex])?"#c9b8ff":["I","I_WIN","I_FEEDBACK"].includes(PIE_TYPES[pieIndex])?"#ffc89a":"#9acfff"),borderRadius:8,padding:"8px 14px",fontSize:12,fontWeight:700,color:["P","P_ANGEBOT"].includes(PIE_TYPES[pieIndex])?"#7b5ea7":["I","I_WIN","I_FEEDBACK"].includes(PIE_TYPES[pieIndex])?"#d4730a":"#2a7db5"}}>
+                Content heute: {PIE_NAMES[PIE_TYPES[pieIndex]]}
+              </div>
+            </div>
 
             <div style={S.qWrap}>
               <label style={S.qLabel}><span style={S.qNum}>1</span>Was bist du?</label>
@@ -319,7 +338,7 @@ export default function App() {
 
             <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
               <button style={{ ...S.btnBack, flex: 1 }} onClick={() => { setResult(null); setError(""); setScreen("form"); }}>Einordnung ändern</button>
-              <button style={{ ...S.btnMain, marginTop: 0, flex: 2 }} onClick={() => { setResult(null); setError(""); setScreen("form"); }}>Plan für morgen</button>
+              <button style={{ ...S.btnMain, marginTop: 0, flex: 2 }} onClick={() => { setResult(null); setError(""); setScreen("form"); setPieIndex(i => (i + 1) % 3); }}>Plan für morgen</button>
             </div>
           </div>
         )}
